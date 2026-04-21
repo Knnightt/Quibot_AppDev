@@ -1,4 +1,4 @@
-import { call, put, takeLatest } from 'redux-saga/effects';
+import { call, put, takeLatest, select } from 'redux-saga/effects';
 import { 
   LOGIN_REQUEST, 
   LOGIN_SUCCESS, 
@@ -58,8 +58,11 @@ function* registerSaga(action) {
 // Get User Saga
 function* getUserSaga() {
   try {
+    // Get token from Redux state
+    const token = yield select(state => state.auth.token);
+    
     // authMe throws on error, returns user data directly on success
-    const userData = yield call(authMe);
+    const userData = yield call(authMe, token);
     
     yield put({ 
       type: GET_USER_SUCCESS, 
@@ -77,7 +80,9 @@ function* getUserSaga() {
 // Logout Saga
 function* logoutSaga() {
   try {
-    yield call(authLogout);
+    // Get token from Redux state
+    const token = yield select(state => state.auth.token);
+    yield call(authLogout, token);
   } catch (error) {
     console.log('Logout error:', error);
   }

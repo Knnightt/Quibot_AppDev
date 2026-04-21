@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_BASE_URL } from './config';
 
 const BASE_URL = API_BASE_URL;
@@ -9,32 +8,6 @@ const defaultOptions = {
     'Content-Type': 'application/json',
   },
 };
-
-// Token storage functions
-export async function storeToken(token) {
-  try {
-    await AsyncStorage.setItem('userToken', token);
-  } catch (error) {
-    console.log('Error storing token:', error);
-  }
-}
-
-export async function getToken() {
-  try {
-    return await AsyncStorage.getItem('userToken');
-  } catch (error) {
-    console.log('Error getting token:', error);
-    return null;
-  }
-}
-
-export async function removeToken() {
-  try {
-    await AsyncStorage.removeItem('userToken');
-  } catch (error) {
-    console.log('Error removing token:', error);
-  }
-}
 
 // Login API call
 export async function authLogin({ email, password }) {
@@ -52,7 +25,6 @@ export async function authLogin({ email, password }) {
     
     if (response.ok) {
       if (data.token) {
-        await storeToken(data.token);
         return data;
       } else {
         throw new Error('No token received');
@@ -92,12 +64,10 @@ export async function authRegister({ email, password, }) {
 }
 
 // Get current user
-export async function authMe() {
+export async function authMe(token) {
   try {
-    const token = await getToken();
-    
     if (!token) {
-      throw new Error('No token found');
+      throw new Error('No token provided');
     }
     
     console.log('Fetching user with token:', token.substring(0, 20) + '...');
@@ -117,9 +87,6 @@ export async function authMe() {
       // Handle different response structures
       return data.user || data;
     } else {
-      if (response.status === 401) {
-        await removeToken();
-      }
       throw new Error(data.message || data.detail || 'Failed to get user');
     }
   } catch (error) {
@@ -129,10 +96,8 @@ export async function authMe() {
 }
 
 // Logout
-export async function authLogout() {
+export async function authLogout(token) {
   try {
-    const token = await getToken();
-    
     if (token) {
       // Call logout API (optional)
       try {
@@ -148,8 +113,6 @@ export async function authLogout() {
       }
     }
     
-    // Remove token from storage
-    await removeToken();
     return { success: true };
   } catch (error) {
     console.log('Logout error:', error);
