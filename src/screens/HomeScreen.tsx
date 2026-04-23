@@ -4,29 +4,30 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
 import { LOGOUT } from '../app/reducers/authReducer';
 import NestedCard from '../components/NestedCard';
+import { AppState, User } from '../types';
 
-const HomeScreen = () => {
+const HomeScreen: React.FC = () => {
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const { user } = useSelector(state => state.auth);
+  const { user } = useSelector((state: AppState) => state.auth);
 
   console.log('[SCREEN] Home screen loaded');
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     console.log('[ACTION] Logout button pressed');
     console.log(`[USER] Logging out: ${user?.email || 'unknown'}`);
     dispatch({ type: LOGOUT });
   };
 
-  const handleProfilePress = () => {
+  const handleProfilePress = (): void => {
     console.log('[ACTION] Profile button pressed');
-    navigation.navigate('Profile');
+    navigation.navigate('Profile' as never);
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Home Screen</Text>
-      
+
       {user && (
         <View style={styles.userInfo}>
           <Text style={styles.welcome}>Welcome, {user.fullName || user.email}!</Text>

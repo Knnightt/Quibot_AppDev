@@ -1,7 +1,8 @@
+import React from 'react';
 import { Text, View, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 
-const ProfileScreen = () => {
+const ProfileScreen: React.FC = () => {
   const navigation = useNavigation();
 
   return (

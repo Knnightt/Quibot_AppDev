@@ -1,5 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Alert, Text, TouchableOpacity, View, ActivityIndicator, ImageBackground, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  Alert,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+  ImageBackground,
+  StyleSheet,
+  StyleProp,
+  ViewStyle,
+  TextStyle,
+  ImageStyle,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -7,15 +19,16 @@ import CustomButton from '../../components/CustomButton';
 import CustomTextInput from '../../components/CustomTextInput';
 import { ROUTES } from '../../utils';
 import { REGISTER_REQUEST } from '../../app/reducers/authReducer';
+import { AppState } from '../../types';
 
-const Register = () => {
-  const [emailAdd, setEmailAdd] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+const Register: React.FC = () => {
+  const [emailAdd, setEmailAdd] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [confirmPassword, setConfirmPassword] = useState<string>('');
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { isLoading, error, registerSuccess } = useSelector(state => state.auth || {});
+  const { isLoading, error, registerSuccess } = useSelector((state: AppState) => state.auth || {});
 
   // Log when Register screen loads
   console.log('[SCREEN] Register screen loaded');
@@ -25,7 +38,7 @@ const Register = () => {
     if (registerSuccess) {
       console.log('[SUCCESS] Registration successful, redirecting to login');
       Alert.alert('Success', 'Registration successful! Please login.');
-      navigation.navigate(ROUTES.LOGIN);
+      navigation.navigate(ROUTES.LOGIN as never);
     }
   }, [registerSuccess, navigation]);
 
@@ -37,7 +50,7 @@ const Register = () => {
     }
   }, [error]);
 
-  const handleRegister = () => {
+  const handleRegister = (): void => {
     // Log button press with final values
     console.log('[ACTION] Register button pressed');
     console.log(`[DATA] Email: ${emailAdd}, Password entered: ${password ? 'Yes' : 'No'}`);
@@ -56,28 +69,28 @@ const Register = () => {
     }
 
     console.log('[VALIDATION] All fields valid, dispatching REGISTER_REQUEST');
-    
+
     // Dispatch Redux action
-    dispatch({ 
-      type: REGISTER_REQUEST, 
-      payload: { email: emailAdd, password } 
+    dispatch({
+      type: REGISTER_REQUEST,
+      payload: { email: emailAdd, password }
     });
   };
 
-  const handleLoginPress = () => {
+  const handleLoginPress = (): void => {
     console.log('[ACTION] Login link pressed');
-    navigation.navigate(ROUTES.LOGIN);
+    navigation.navigate(ROUTES.LOGIN as never);
   };
 
   return (
     <ImageBackground
       source={{ uri: 'https://i.imgur.com/4NJl8sD.jpg' }}
-      style={styles.background}
+      style={styles.background as StyleProp<ImageStyle>}
     >
-      <View style={styles.overlay} />
-      <View style={styles.formWrapper}>
-        <Text style={styles.title}>Create an account</Text>
-        <Text style={styles.subtitle}>Join us to pamper your furry friends</Text>
+      <View style={styles.overlay as StyleProp<ViewStyle>} />
+      <View style={styles.formWrapper as StyleProp<ViewStyle>}>
+        <Text style={styles.title as StyleProp<TextStyle>}>Create an account</Text>
+        <Text style={styles.subtitle as StyleProp<TextStyle>}>Join us to pamper your furry friends</Text>
 
         <CustomTextInput
           label={'Email Address'}
@@ -86,8 +99,8 @@ const Register = () => {
           onChangeText={setEmailAdd}
           keyboardType="email-address"
           autoCapitalize="none"
-          containerStyle={styles.inputContainer}
-          textStyle={styles.inputText}
+          containerStyle={styles.inputContainer as StyleProp<ViewStyle>}
+          textStyle={styles.inputText as StyleProp<TextStyle>}
         />
         <CustomTextInput
           label={'Password'}
@@ -95,8 +108,8 @@ const Register = () => {
           value={password}
           onChangeText={setPassword}
           secureTextEntry={true}
-          containerStyle={styles.inputContainer}
-          textStyle={styles.inputText}
+          containerStyle={styles.inputContainer as StyleProp<ViewStyle>}
+          textStyle={styles.inputText as StyleProp<TextStyle>}
         />
         <CustomTextInput
           label={'Confirm Password'}
@@ -104,31 +117,30 @@ const Register = () => {
           value={confirmPassword}
           onChangeText={setConfirmPassword}
           secureTextEntry={true}
-          containerStyle={styles.inputContainer}
-          textStyle={styles.inputText}
+          containerStyle={styles.inputContainer as StyleProp<ViewStyle>}
+          textStyle={styles.inputText as StyleProp<TextStyle>}
         />
 
         <CustomButton
           label={isLoading ? "REGISTERING..." : "Sign Up"}
-          containerStyle={[styles.button, isLoading && { backgroundColor: 'gray' }]}
-          textStyle={styles.buttonText}
+          containerStyle={[styles.button as StyleProp<ViewStyle>, isLoading && { backgroundColor: 'gray' }]}
+          textStyle={styles.buttonText as StyleProp<TextStyle>}
           onPress={handleRegister}
           disabled={isLoading}
         >
           {isLoading && <ActivityIndicator color="white" />}
         </CustomButton>
 
-        <View style={styles.footerLinks}>
-          <Text style={styles.footerText}>Already have an account?</Text>
+        <View style={styles.footerLinks as StyleProp<ViewStyle>}>
+          <Text style={styles.footerText as StyleProp<TextStyle>}>Already have an account?</Text>
           <TouchableOpacity onPress={handleLoginPress}>
-            <Text style={styles.linkText}>Login</Text>
+            <Text style={styles.linkText as StyleProp<TextStyle>}>Login</Text>
           </TouchableOpacity>
         </View>
       </View>
     </ImageBackground>
   );
 };
-
 
 const styles = {
   background: {

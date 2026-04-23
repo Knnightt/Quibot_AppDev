@@ -1,5 +1,17 @@
-import { useState, useEffect } from 'react';
-import { Alert, Text, TouchableOpacity, View, ActivityIndicator, ImageBackground, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import {
+  Alert,
+  Text,
+  TouchableOpacity,
+  View,
+  ActivityIndicator,
+  ImageBackground,
+  StyleSheet,
+  StyleProp,
+  ViewStyle,
+  TextStyle,
+  ImageStyle,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -7,16 +19,17 @@ import CustomButton from '../../components/CustomButton';
 import CustomTextInput from '../../components/CustomTextInput';
 import { ROUTES } from '../../utils';
 import { LOGIN_REQUEST } from '../../app/reducers/authReducer';
+import { AppState } from '../../types';
 
-const Login = () => {
-  const [emailAdd, setEmailAdd] = useState('');
-  const [password, setPassword] = useState('');
+const Login: React.FC = () => {
+  const [emailAdd, setEmailAdd] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  
+
   // Get loading, error, and auth state from Redux
-  const { isLoading, error, isAuthenticated } = useSelector(state => state.auth);
+  const { isLoading, error, isAuthenticated } = useSelector((state: AppState) => state.auth);
 
   // Log when Login screen loads
   console.log('[SCREEN] Login screen loaded');
@@ -37,7 +50,7 @@ const Login = () => {
     }
   }, [isAuthenticated, navigation]);
 
-  const handleLogin = () => {
+  const handleLogin = (): void => {
     // Log button press with final values
     console.log('[ACTION] Login button pressed');
     console.log(`[DATA] Email: ${emailAdd}, Password entered: ${password ? 'Yes' : 'No'}`);
@@ -52,36 +65,36 @@ const Login = () => {
     }
 
     console.log('[VALIDATION] All fields filled, dispatching LOGIN_REQUEST');
-    
+
     // Dispatch login action
-    dispatch({ 
-      type: LOGIN_REQUEST, 
-      payload: { email: emailAdd, password } 
+    dispatch({
+      type: LOGIN_REQUEST,
+      payload: { email: emailAdd, password }
     });
   };
 
-  const handleRegisterPress = () => {
+  const handleRegisterPress = (): void => {
     console.log('[ACTION] Register link pressed');
-    navigation.navigate(ROUTES.REGISTER);
+    navigation.navigate(ROUTES.REGISTER as never);
   };
 
   return (
     <ImageBackground
       source={{ uri: 'https://i.imgur.com/4NJl8sD.jpg' }}
-      style={styles.background}
+      style={styles.background as StyleProp<ImageStyle>}
     >
-      <View style={styles.overlay} />
-      <View style={styles.formWrapper}>
-        <Text style={styles.title}>Welcome back</Text>
-        <Text style={styles.subtitle}>Enter your details to access your account</Text>
+      <View style={styles.overlay as StyleProp<ViewStyle>} />
+      <View style={styles.formWrapper as StyleProp<ViewStyle>}>
+        <Text style={styles.title as StyleProp<TextStyle>}>Welcome back</Text>
+        <Text style={styles.subtitle as StyleProp<TextStyle>}>Enter your details to access your account</Text>
 
         <CustomTextInput
           label={'Email Address'}
           placeholder={'Enter Email Address'}
           value={emailAdd}
           onChangeText={setEmailAdd}
-          containerStyle={styles.inputContainer}
-          textStyle={styles.inputText}
+          containerStyle={styles.inputContainer as StyleProp<ViewStyle>}
+          textStyle={styles.inputText as StyleProp<TextStyle>}
         />
         <CustomTextInput
           label={'Password'}
@@ -89,31 +102,30 @@ const Login = () => {
           value={password}
           onChangeText={setPassword}
           secureTextEntry={true}
-          containerStyle={styles.inputContainer}
-          textStyle={styles.inputText}
+          containerStyle={styles.inputContainer as StyleProp<ViewStyle>}
+          textStyle={styles.inputText as StyleProp<TextStyle>}
         />
 
         <CustomButton
           label={isLoading ? "LOGGING IN..." : "Sign In"}
-          containerStyle={[styles.button, isLoading && { backgroundColor: 'gray' }]}
-          textStyle={styles.buttonText}
+          containerStyle={[styles.button as StyleProp<ViewStyle>, isLoading && { backgroundColor: 'gray' }]}
+          textStyle={styles.buttonText as StyleProp<TextStyle>}
           onPress={handleLogin}
           disabled={isLoading}
         >
           {isLoading && <ActivityIndicator color="white" />}
         </CustomButton>
 
-        <View style={styles.footerLinks}>
-          <Text style={styles.footerText}>Don't have an account?</Text>
+        <View style={styles.footerLinks as StyleProp<ViewStyle>}>
+          <Text style={styles.footerText as StyleProp<TextStyle>}>Don&apos;t have an account?</Text>
           <TouchableOpacity onPress={handleRegisterPress}>
-            <Text style={styles.linkText}>Sign up</Text>
+            <Text style={styles.linkText as StyleProp<TextStyle>}>Sign up</Text>
           </TouchableOpacity>
         </View>
       </View>
     </ImageBackground>
   );
 };
-
 
 const styles = {
   background: {

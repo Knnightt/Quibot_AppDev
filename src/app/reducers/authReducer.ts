@@ -10,8 +10,10 @@ export const GET_USER_REQUEST = 'GET_USER_REQUEST';
 export const GET_USER_SUCCESS = 'GET_USER_SUCCESS';
 export const GET_USER_FAILURE = 'GET_USER_FAILURE';
 
+import { AuthState, Action, User } from '../../types';
+
 // Initial State
-const initialState = {
+const initialState: AuthState = {
   user: null,
   token: null,
   isLoading: false,
@@ -21,7 +23,7 @@ const initialState = {
 };
 
 // Reducer
-export default function authReducer(state = initialState, action) {
+export default function authReducer(state = initialState, action: Action): AuthState {
   console.log('Reducer action:', action.type);
   switch (action.type) {
     case LOGIN_REQUEST:
@@ -32,7 +34,7 @@ export default function authReducer(state = initialState, action) {
         isLoading: true,
         error: null,
       };
-    
+
     case LOGIN_SUCCESS:
       return {
         ...state,
@@ -42,15 +44,15 @@ export default function authReducer(state = initialState, action) {
         user: action.payload.user,
         error: null,
       };
-    
+
     case REGISTER_SUCCESS:
       return {
         ...state,
         isLoading: false,
-        error: null, 
+        error: null,
         registerSuccess: true,
-      }
-      
+      };
+
     case GET_USER_SUCCESS:
       return {
         ...state,
@@ -59,7 +61,7 @@ export default function authReducer(state = initialState, action) {
         user: action.payload.user,
         error: null,
       };
-    
+
     case LOGIN_FAILURE:
     case REGISTER_FAILURE:
     case GET_USER_FAILURE:
@@ -71,7 +73,7 @@ export default function authReducer(state = initialState, action) {
         token: null,
         error: action.payload,
       };
-    
+
     case LOGOUT:
       return {
         ...state,
@@ -80,7 +82,7 @@ export default function authReducer(state = initialState, action) {
         isAuthenticated: false,
         error: null,
       };
-    
+
     default:
       return state;
   }

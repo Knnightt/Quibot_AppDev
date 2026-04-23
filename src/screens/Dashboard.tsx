@@ -6,37 +6,34 @@ import { API_BASE_URL } from '../app/api/config';
 import { ROUTES } from '../utils';
 import { LOGOUT } from '../app/reducers/authReducer';
 import NestedCard from '../components/NestedCard';
-// import CustomButton from '../components/CustomButton';
-import { CustomEvent } from 'react-native/types_generated/Libraries/ReactPrivate/ReactNativePrivateInterface';
+import { AppState, User, DashboardStat } from '../types';
 
-const Dashboard = () => {
+const Dashboard: React.FC = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
-  const { token, user, isAuthenticated } = useSelector(state => state.auth);
+  const { token, user, isAuthenticated } = useSelector((state: AppState) => state.auth);
 
-  const handleLogout = () => {
+  const handleLogout = (): void => {
     console.log('[ACTION] Logout button pressed');
     dispatch({ type: LOGOUT });
-    navigation.reset({ index: 0, routes: [{ name: ROUTES.LOGIN }] });
+    navigation.reset({ index: 0, routes: [{ name: ROUTES.LOGIN as never }] });
   };
 
-  //  <CustomButton/>
-
-  const [displayStats, setDisplayStats] = useState([
+  const [displayStats, setDisplayStats] = useState<DashboardStat[]>([
     { id: 'bookings', label: 'TOTAL BOOKINGS', value: 0, subtitle: 'Lifetime appointments' },
     { id: 'pets', label: 'MY PETS', value: 0, subtitle: 'Furry companions' },
     { id: 'next', label: 'NEXT APPOINTMENT', value: 'None', subtitle: 'No upcoming appointments' },
   ]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleBooking = () => {
+  const handleBooking = (): void => {
     console.log('Book Appointment pressed');
     // TODO: navigate to create booking screen once it exists
   };
 
   useEffect(() => {
-    async function loadDashboard() {
+    async function loadDashboard(): Promise<void> {
       if (!isAuthenticated || !token) {
         setError('Please login to view dashboard data.');
         return;
@@ -71,7 +68,7 @@ const Dashboard = () => {
         }
       } catch (ex) {
         console.warn('Dashboard fetch error:', ex);
-        setError(ex.message || 'Could not load dashboard data');
+        setError((ex as Error).message || 'Could not load dashboard data');
       } finally {
         setLoading(false);
       }
@@ -103,7 +100,7 @@ const Dashboard = () => {
       )}
 
       {!loading && isAuthenticated && (
-        <Text style={styles.welcomeTitle}>Good Day {user?.fullName || user?.email || 'Friend'}</Text>
+        <Text style={styles.welcomeTitle}>Good Day {(user as User)?.fullName || (user as User)?.email || 'Friend'}</Text>
       )}
 
       {!isAuthenticated && (
@@ -337,7 +334,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: 18,
-    fontWeight:'bold',
+    fontWeight: 'bold',
     marginBottom: 6,
   },
   footerSub: {

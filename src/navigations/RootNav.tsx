@@ -3,11 +3,12 @@ import { useSelector } from 'react-redux';
 import { createStackNavigator } from '@react-navigation/stack';
 import AuthNav from './AuthNav';
 import MainNav from './MainNav';
+import { AppState } from '../types';
 
 const Stack = createStackNavigator();
 
-const RootNav = () => {
-  const { isAuthenticated, token, user } = useSelector(state => state.auth);
+const RootNav: React.FC = () => {
+  const { isAuthenticated, token, user } = useSelector((state: AppState) => state.auth);
   const loggedIn = !!token && !!user && isAuthenticated;
 
   console.log('RootNav - auth:', { isAuthenticated, token, user });

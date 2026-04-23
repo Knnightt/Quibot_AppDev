@@ -1,7 +1,21 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, StyleProp, ViewStyle } from 'react-native';
 
-const NestedCard = ({ title, children, style }) => {
+interface NestedCardProps {
+  title?: string;
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+}
+
+interface NestedCardSectionProps {
+  label?: string;
+  children: React.ReactNode;
+  style?: StyleProp<ViewStyle>;
+}
+
+const NestedCard: React.FC<NestedCardProps> & {
+  Section: React.FC<NestedCardSectionProps>;
+} = ({ title, children, style }) => {
   return (
     <View style={[styles.card, style]}>
       {title ? <Text style={styles.cardTitle}>{title}</Text> : null}
@@ -10,7 +24,7 @@ const NestedCard = ({ title, children, style }) => {
   );
 };
 
-NestedCard.Section = ({ label, children, style }) => {
+NestedCard.Section = ({ label, children, style }: NestedCardSectionProps) => {
   return (
     <View style={[styles.section, style]}>
       {label ? <Text style={styles.sectionTitle}>{label}</Text> : null}
