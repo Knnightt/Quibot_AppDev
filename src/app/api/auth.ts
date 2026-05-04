@@ -1,5 +1,14 @@
 import { API_BASE_URL } from './config';
-import { LoginCredentials, RegisterCredentials, LoginResponse, User } from '../../types';
+import {
+  LoginCredentials,
+  RegisterCredentials,
+  LoginResponse,
+  User,
+  GoogleOAuthCredentials,
+  VerifyEmailCredentials,
+  VerifyEmailResponse,
+  Customer,
+} from '../../types/api.types';
 
 const BASE_URL: string = API_BASE_URL;
 
@@ -8,6 +17,18 @@ const defaultOptions: RequestInit = {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
+};
+
+// Helper function for authenticated requests
+const authHeaders = (token: string | null): Record<string, string> => {
+  if (!token) {
+    throw new Error('No authentication token provided');
+  }
+  return {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${token}`,
+  };
 };
 
 // Login API call
@@ -40,14 +61,14 @@ export async function authLogin({ email, password }: LoginCredentials): Promise<
 }
 
 // Register API call
-export async function authRegister({ email, password }: RegisterCredentials): Promise<any> {
+export async function authRegister({ email, username, password, fullName }: RegisterCredentials): Promise<{ message: string; user: Customer; emailVerificationSent: boolean }> {
   try {
-    console.log('Attempting registration with:', { email, password });
+    console.log('Attempting registration with:', { email, username });
 
     const response = await fetch(`${BASE_URL}/register`, {
       method: 'POST',
       ...defaultOptions,
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, username, password, fullName }),
     });
 
     const data = await response.json();
@@ -64,6 +85,56 @@ export async function authRegister({ email, password }: RegisterCredentials): Pr
   }
 }
 
+// Google OAuth API call
+export async function authGoogleOAuth({ id_token }: GoogleOAuthCredentials): Promise<LoginResponse> {
+  try {
+    console.log('Attempting Google OAuth login');
+
+    const response = await fetch(`${BASE_URL}/oauth/google/token`, {
+      method: 'POST',
+      ...defaultOptions,
+      body: JSON.stringify({ id_token }),
+    });
+
+    const data = await response.json();
+    console.log('Google OAuth response:', data);
+
+    if (response.ok) {
+      return data;
+    } else {
+      throw new Error(data.message || data.detail || 'Google OAuth failed');
+    }
+  } catch (error) {
+    console.log('Google OAuth error:', error);
+    throw error;
+  }
+}
+
+// Verify Email API call
+export async function authVerifyEmail({ token }: VerifyEmailCredentials): Promise<VerifyEmailResponse> {
+  try {
+    console.log('Verifying email with token');
+
+    const response = await fetch(`${BASE_URL}/verify-email`, {
+      method: 'POST',
+      ...defaultOptions,
+      body: JSON.stringify({ token }),
+    });
+
+    const data = await response.json();
+    console.log('Verify email response:', data);
+
+    if (response.ok) {
+      return data;
+    } else {
+      throw new Error(data.message || data.detail || 'Email verification failed');
+    }
+  } catch (error) {
+    console.log('Verify email error:', error);
+    throw error;
+  }
+}
+
 // Get current user
 export async function authMe(token: string | null): Promise<User> {
   try {
@@ -75,10 +146,7 @@ export async function authMe(token: string | null): Promise<User> {
 
     const response = await fetch(`${BASE_URL}/me`, {
       method: 'GET',
-      headers: {
-        ...defaultOptions.headers,
-        'Authorization': `Bearer ${token}`,
-      },
+      headers: authHeaders(token),
     });
 
     const data = await response.json();
@@ -104,10 +172,7 @@ export async function authLogout(token: string | null): Promise<{ success: boole
       try {
         await fetch(`${BASE_URL}/logout`, {
           method: 'POST',
-          headers: {
-            ...defaultOptions.headers,
-            'Authorization': `Bearer ${token}`,
-          },
+          headers: authHeaders(token),
         });
       } catch (apiError) {
         console.log('Logout API error (non-critical):', apiError);
@@ -120,3 +185,5 @@ export async function authLogout(token: string | null): Promise<{ success: boole
     return { success: true }; // Still return success even if API fails
   }
 }
+
+export { authHeaders };

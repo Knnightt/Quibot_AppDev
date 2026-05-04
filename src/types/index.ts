@@ -1,40 +1,5 @@
-// Auth Types
-export interface User {
-  id?: string;
-  email: string;
-  fullName?: string;
-  [key: string]: any;
-}
-
-export interface AuthState {
-  user: User | null;
-  token: string | null;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  error: string | null;
-  registerSuccess: boolean;
-}
-
-// API Types
-export interface LoginCredentials {
-  email: string;
-  password: string;
-}
-
-export interface RegisterCredentials {
-  email: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  token: string;
-  user?: User;
-}
-
-export interface ApiError {
-  message: string;
-  detail?: string;
-}
+// Re-export all API types
+export * from './api.types';
 
 // Redux Action Types
 export interface Action {
@@ -92,15 +57,72 @@ export interface NestedCardSectionProps {
   style?: object;
 }
 
-// Dashboard Types
-export interface DashboardStat {
-  id: string;
-  label: string;
-  value: string | number;
-  subtitle: string;
+// Auth State (using types from api.types)
+import { User, Customer, Pet, Appointment, Staff, DashboardStat } from './api.types';
+
+export interface AuthState {
+  user: User | Customer | null;
+  token: string | null;
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  error: string | null;
+  registerSuccess: boolean;
+}
+
+// Users State
+export interface UsersState {
+  users: User[];
+  selectedUser: User | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+// Customers State
+export interface CustomersState {
+  customers: Customer[];
+  selectedCustomer: Customer | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+// Pets State
+export interface PetsState {
+  pets: Pet[];
+  selectedPet: Pet | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+// Appointments State
+export interface AppointmentsState {
+  appointments: Appointment[];
+  selectedAppointment: Appointment | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+// Staff State
+export interface StaffState {
+  staff: Staff[];
+  selectedStaff: Staff | null;
+  isLoading: boolean;
+  error: string | null;
+}
+
+// Dashboard State
+export interface DashboardState {
+  stats: DashboardStat[];
+  isLoading: boolean;
+  error: string | null;
 }
 
 // App State
 export interface AppState {
   auth: AuthState;
+  users: UsersState;
+  customers: CustomersState;
+  pets: PetsState;
+  appointments: AppointmentsState;
+  staff: StaffState;
+  dashboard: DashboardState;
 }

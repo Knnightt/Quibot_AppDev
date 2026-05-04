@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { ScrollView, View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector, useDispatch } from 'react-redux';
-import { API_BASE_URL } from '../app/api/config';
 import { ROUTES } from '../utils';
 import { LOGOUT } from '../app/reducers/authReducer';
+import { GET_DASHBOARD_REQUEST } from '../app/reducers/dashboardReducer';
 import NestedCard from '../components/NestedCard';
-import { AppState, User, DashboardStat } from '../types';
+import { AppState, User } from '../types';
 
 const Dashboard: React.FC = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { token, user, isAuthenticated } = useSelector((state: AppState) => state.auth);
+  const { stats: displayStats, isLoading: loading, error } = useSelector((state: AppState) => state.dashboard);
 
   const handleLogout = (): void => {
     console.log('[ACTION] Logout button pressed');
@@ -19,63 +20,16 @@ const Dashboard: React.FC = () => {
     navigation.reset({ index: 0, routes: [{ name: ROUTES.LOGIN as never }] });
   };
 
-  const [displayStats, setDisplayStats] = useState<DashboardStat[]>([
-    { id: 'bookings', label: 'TOTAL BOOKINGS', value: 0, subtitle: 'Lifetime appointments' },
-    { id: 'pets', label: 'MY PETS', value: 0, subtitle: 'Furry companions' },
-    { id: 'next', label: 'NEXT APPOINTMENT', value: 'None', subtitle: 'No upcoming appointments' },
-  ]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
   const handleBooking = (): void => {
     console.log('Book Appointment pressed');
     // TODO: navigate to create booking screen once it exists
   };
 
   useEffect(() => {
-    async function loadDashboard(): Promise<void> {
-      if (!isAuthenticated || !token) {
-        setError('Please login to view dashboard data.');
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetch(`${API_BASE_URL}/dashboard`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error(`Backend returned ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // Adjust according to your backend shape:
-        if (Array.isArray(data.stats)) {
-          setDisplayStats(data.stats);
-        } else if (data.data?.stats) {
-          setDisplayStats(data.data.stats);
-        } else {
-          // fallback data still preserved.
-          setError('Received unexpected dashboard format, using cached stats.');
-        }
-      } catch (ex) {
-        console.warn('Dashboard fetch error:', ex);
-        setError((ex as Error).message || 'Could not load dashboard data');
-      } finally {
-        setLoading(false);
-      }
+    if (isAuthenticated && token) {
+      dispatch({ type: GET_DASHBOARD_REQUEST });
     }
-
-    loadDashboard();
-  }, [isAuthenticated, token]);
+  }, [isAuthenticated, token, dispatch]);
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
