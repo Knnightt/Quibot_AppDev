@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "903263369096",
+    "project_id": "grooming-services-4a334",
+    "storage_bucket": "grooming-services-4a334.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:903263369096:android:3ab63c705ae7adc4edec3d",
+        "android_client_info": {
+          "package_name": "com.grooming"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8m6kLDvep-rZ1gIWHfmw8TbP8Qu5NcsI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
